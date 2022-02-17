@@ -37,3 +37,9 @@ body {
 .moduleEntryThumb {
     padding-right: 4px;
 }
+
+/* profile */
+.profileThumbnail {
+    width: 45px;
+    height: 45px;
+}
