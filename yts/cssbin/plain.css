@@ -1,0 +1,39 @@
+body {
+    width: 50%;
+}
+
+/* video details */
+.description {
+    width: 55%;
+    font-size: 14px;
+    padding-top: 3px;
+}
+
+.uploaderDetails {
+    width: 40%;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    font-size: 13px;
+}
+
+.uploadDate {
+    float: right;
+}
+
+.uploadAuthor {
+    float: left;   
+}
+
+/* search page */
+.searchContainer {
+    padding-top: 5px;
+}
+.searchTitle {
+    padding-top: 5px;
+}
+.moduleEntry {
+    padding-top: 5px;
+}
+.moduleEntryThumb {
+    padding-right: 4px;
+}
