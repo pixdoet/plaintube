@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" simplified-layout-enabled="true">
+	<head>
+		<meta charset="utf-8">
+		<title>Plaintube - A plain YouTube interface</title>
+		<link rel="stylesheet" href="yts/cssbin/plain.css">
+	</head>
+	<body class="body">
+		<div class="header">
+			<div class="header">
+				<form class="searchForm" method="get" action="results.php">
+					<label for="query">Search videos:
+					</label>
+					<input type="text" name="search"/>
+					<input type="submit" value="Search!">
+				</form>
+			</div>
+		</div>
+		<div class="content">
+			{% block content %}{% endblock %}
+		</div>
+	</body>
+</html>

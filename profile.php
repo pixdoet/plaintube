@@ -41,22 +41,23 @@ if (!isset($_GET['id'])) {
     </head>
 
     <body>
-        <?php include("includes/html/header.php");?>
-        <h1 class="searchTitle"><?php echo $cDetails['name'];?>'s profile</h1>
+        <?php include("includes/html/header.php"); ?>
+        <h1 class="searchTitle"><?php echo $cDetails['name']; ?>'s profile</h1>
         <div class="profileContent">
-            <img class="profileThumbnail" src="<?php echo htmlspecialchars($cDetails['avatar'])?>" alt="<?php echo htmlspecialchars($cDetails['name']);?>'s profile picture">
-            <p>About <?php echo $cDetails['name'];?>: </p>
+            <img class="profileThumbnail" src="<?php echo htmlspecialchars($cDetails['avatar']) ?>" alt="<?php echo htmlspecialchars($cDetails['name']); ?>'s profile picture">
+            <p>About <?php echo $cDetails['name']; ?>: </p>
             <div class="description">
-                Channel description: 
-                <p><?php echo htmlspecialchars($cDetails['description']);?></p>
+                Channel description:
+                <p><?php echo htmlspecialchars($cDetails['description']); ?></p>
             </div>
             <div class="joinedOn">
-                Joined on: <?php echo htmlspecialchars($cDetails['joined']);?>
+                Joined on: <?php echo htmlspecialchars($cDetails['joined']); ?>
             </div>
             <div class="rss">
-                Subscribe to <?php echo htmlspecialchars($cDetails['name']);?>'s RSS feed: <a href="<?php echo $cDetails['rss'];?>">Subscribe</a>
+                Subscribe to <?php echo htmlspecialchars($cDetails['name']); ?>'s RSS feed: <a href="<?php echo $cDetails['rss']; ?>">Subscribe</a>
             </div>
         </div>
     </body>
+
     </html>
 <?php } ?>

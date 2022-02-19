@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+{% block content %}
+	<div class="titleBar">
+		<h1>{{ videoTitle }}</h1>
+	</div>
+	<div class="videoHolder">
+		{{ videoSrcHtml | raw }}
+	</div>
+	<div class="videoDetails">
+		<div class="topDetails">
+			<p class="viewCount">{{ videoViewCount }}
+				views</p>
+			<p class="uploadDate">
+				{{ videoUploadDate }}
+			</p>
+		</div>
+		<div class="bottomDetails">
+			<p class="description">{{ videoDescription }}</p>
+			<p class="uploadAuthor">
+				Uploaded by:
+				<a href="profile.php?id={{ authorChannelId }}">{{ videoAuthor }}</a>
+			</p>
+		</div>
+	</div>
+{% endblock %}
