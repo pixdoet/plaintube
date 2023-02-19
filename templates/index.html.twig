@@ -1,6 +1,26 @@
 {% extends "base.html.twig" %}
-{% block title %}
-    {{ title }}
-{% endblock %}
-{% block content %}
+
+{% block mainContent %}
+<div>
+{% for entry in entries %}
+<table width="100%">
+<tbody><tr valign="top">
+<td style="font-size:0px" width="80">
+<a href="/watch?v={{ entry.videoId }}"><img src="{{ entry.videoThumbnail }}" alt="video" style="border:0;margin:0px;" width="80" height="60"></a>
+</td>
+<td style="width:100%;font-size:13px;padding-left:2px">
+<div style="font-size:90%;padding-bottom:1px">
+<a accesskey="4" href="/watch?v={{ entry.videoId }}">{{ entry.videoTitle }}</a>
+</div>
+<div style="color:#333;font-size:80%">{{ entry.videoRuntime }}&nbsp;&nbsp;</div>
+<div style="color:#333;font-size:80%">{{ entry.videoUploadDate }}</div>
+<div style="color:#333;font-size:80%">{{ entry.videoViewCount }} views</div>
+<div style="color:#666;margin-top:5px;font-size:90%">
+In <a href="/">Rising Videos</a>
+</div>
+</td>
+</tr>
+</tbody></table>
+{% endfor %}
+</div>
 {% endblock %}
