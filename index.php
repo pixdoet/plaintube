@@ -13,7 +13,5 @@ echo $twig->render(
     'index.html.twig',
     [
         "title" => "Hello!",
-    ],
+    ]
 );
-
-?>
