@@ -21,7 +21,7 @@ function requestBrowse($brid)
     in the documentation that's horribly out of date and probably not going 
     to exist.
   */
-  include("includes/config.inc.php");
+  include_once("includes/config.inc.php");
   $req_arr = json_encode(
     array(
       'context' =>
@@ -198,7 +198,7 @@ function requestBrowse($brid)
 // endpoint: /youtubei/v1/player
 function requestPlayer($videoId)
 {
-  include("includes/config.inc.php");
+  include_once("includes/config.inc.php");
   $req_arr = json_encode(
     array(
       'context' =>
@@ -389,15 +389,13 @@ function requestPlayer($videoId)
   return $result;
 }
 
-function requestChannel($channelId,$type)
+function requestChannel($channelId, $type)
 {
   // first get browse endpoints, form a request to normal browse
   $getEp = json_decode(requestBrowse($channelId));
-  if($getEp)
-  {
+  if ($getEp) {
     $ep = $getEp->contents->twoColumnBrowseResultsRenderer->tabs;
-    switch($type)
-    {
+    switch ($type) {
       case "videos":
         $brEp = $ep[1]->tabRenderer->endpoint->browseEndpoint->params;
         break;
@@ -413,7 +411,7 @@ function requestChannel($channelId,$type)
     }
   }
   // more advanced functions for browse
-  include("includes/config.inc.php");
+  include_once("includes/config.inc.php");
   $req_arr = json_encode(
     array(
       'context' =>
@@ -589,13 +587,13 @@ function requestChannel($channelId,$type)
 }
 
 function requestSearch($query)
-{  
+{
   // endpoint: /youtube1/v1/search
   /*
     Search functions using youtubei.
     Otherwise, the site is basically unusable :him:
   */
-  include("includes/config.inc.php");
+  include_once("includes/config.inc.php");
   $req_arr = json_encode(array(
     'context' =>
     array(

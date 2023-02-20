@@ -1,12 +1,12 @@
 <?php
 
-include("includes/youtubei/createRequest.php");
-include("includes/config.inc.php");
+include_once("includes/youtubei/createRequest.php");
+include_once("includes/config.inc.php");
 
-if (!isset($_GET['search'])) {
+if (!isset($_GET['q'])) {
     include("includes/html/noquery.php");
 } else {
-    $query = $_GET['search'];
+    $query = $_GET['q'];
     $mainResponseObject = json_decode(requestSearch($query));
 
     // start parsing search results (creepy)

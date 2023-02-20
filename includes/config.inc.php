@@ -1,6 +1,6 @@
 <?php
 /* GENERAL SITE APPEARANCE */
-$resultsCount = 10; // how many results you want in the search page
+$resultsCount = 20; // how many results you want in the search page
 
 /* INNERTUBE REQUESTS SPECIFIC STUFF */
 define("ANDROIDTUBE_REQUEST_CLIENT_VERSION",  "16.12.11"); // only used in player
