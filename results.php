@@ -1,5 +1,13 @@
 <?php
 
+require __DIR__ . '/vendor/autoload.php';
+
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
+$loader = new FilesystemLoader(__DIR__ . '/templates');
+$twig = new Environment($loader);
+
 include_once("includes/youtubei/createRequest.php");
 include_once("includes/config.inc.php");
 
@@ -33,79 +41,53 @@ if (!isset($_GET['q'])) {
         // ok we done here now go to the HTML section below...
 
     } else {
-        require('includes/html/noresults.php');
+        print_r("annoting");
     }
 
-?>
-    <!DOCTYPE html>
-    <html>
+    // create the result array
+    $resarr = [];
 
-    <head>
+    for ($i = $arr; $i < $loopRounds; $i++) {
+        // declare vars
+        // the array format used in watch.php is too annoying
+        // so everything is it's own variable now! yay!
+        // print_r($items);
+        if (isset($items[$i]->videoRenderer)) {
+            $videoId = $items[$i]->videoRenderer->videoId;
+            $videoTitle = $items[$i]->videoRenderer->title->runs[0]->text;
+            //$videoDescription = $items[$]->videoRenderer->
+            $videoThumbnail = $items[$i]->videoRenderer->thumbnail->thumbnails[0]->url;
+            $videoAuthor = $items[$i]->videoRenderer->longBylineText->runs[0]->text;
+            $videoViews = $items[$i]->videoRenderer->viewCountText->simpleText;
+            $videoRuntime = $items[$i]->videoRenderer->lengthText->simpleText;
+            $videoUploadTime = "N/A";
+            $authorChannelId = $items[$i]->videoRenderer->longBylineText->runs[0]->navigationEndpoint->browseEndpoint->browseId;
 
-        <title>Plaintube - a plain youtube interface</title>
-
-        <link rel="stylesheet" type="text/css" href="yts/cssbin/plain.css">
-        <link rel="icon" href="yts/imgbin/favicon.ico" type="image/x-icon">
-
-    </head>
-
-    <body>
-        <?php include("includes/html/header.php"); ?>
-        <h1 class="searchTitle">Search results for <?php echo htmlspecialchars($query); ?></h1>
-        <div class="searchContainer">
-            <?php
-            for ($i = $arr; $i < $loopRounds; $i++) {
-                // declare vars
-                // the array format used in watch.php is too annoying
-                // so everything is it's own variable now! yay!
-                if (isset($items[$i]->videoRenderer)) {
-                    $videoId = $items[$i]->videoRenderer->videoId;
-                    $videoTitle = $items[$i]->videoRenderer->title->runs[0]->text;
-                    //$videoDescription = $items[$]->videoRenderer->
-                    $videoThumbnail = $items[$i]->videoRenderer->thumbnail->thumbnails[0]->url;
-                    $videoAuthor = $items[$i]->videoRenderer->longBylineText->runs[0]->text;
-                    $videoViews = $items[$i]->videoRenderer->viewCountText->simpleText;
-                    $videoRuntime = $items[$i]->videoRenderer->lengthText->simpleText;
-                    $videoUploadTime = $items[$i]->videoRenderer->publishedTimeText->simpleText;
-                    $authorChannelId = $items[$i]->videoRenderer->longBylineText->runs[0]->navigationEndpoint->browseEndpoint->browseId;
-            ?>
-                    <div class="moduleEntry">
-                        <table width="100%" cellspacing="0" cellpadding="0">
-                            <tbody>
-                                <tr valign="top">
-                                    <td>
-                                        <table cellspacing="0" cellpadding="0">
-                                            <tbody>
-                                                <tr>
-                                                    <td><a href="watch.php?v=<?php echo $videoId; ?>"><img src="<?php echo $videoThumbnail; ?>" class="moduleEntryThumb" width="100" height="75"></a></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                    </td>
-                                    <td width="100%">
-                                        <div class="moduleEntryTitle"><a href="watch.php?v=<?php echo $videoId; ?>&search=youtube"><?php echo $videoTitle; ?></a></div>
-                                        <div class="moduleEntryDetails">Added: <?php echo $videoUploadTime; ?> by <a href="profile.php?id=<?php echo $authorChannelId; ?>"><?php echo $videoAuthor; ?></a></div>
-                                        <div class="moduleEntryDetails">Runtime: <?php echo $videoRuntime; ?> | Views: <?php echo $videoViews; ?></div>
-
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php
-                } elseif (isset($items[$i]->channelRenderer)) {
-                    $i += 1;
-                }
-                ?>
-            <?php
+            if (isset($items[$i]->videoRenderer->publishedTimeText->simpleText)) {
+                $videoRuntime = $items[$i]->videoRenderer->publishedTimeText->simpleText;
             }
-            ?>
-        </div>
-    </body>
-
-    </html>
-<?php
+            // write results into array
+            $temp =
+                array(
+                    "videoTitle" => $videoTitle,
+                    "videoId" => $videoId,
+                    "videoThumbnail" => $videoThumbnail,
+                    "videoAuthor" => $videoAuthor,
+                    "videoViewCount" => $videoViews,
+                    "videoUploadTime" => $videoUploadTime,
+                    "authorChannelId" => $authorChannelId,
+                    "videoRuntime" => $videoRuntime
+                );
+            array_push($resarr, $temp);
+        } elseif (isset($items[$i]->channelRenderer)) {
+            $i += 1;
+        }
+    }
+    echo $twig->render(
+        "search.html.twig",
+        [
+            "searchResults" => $resarr,
+            "query" => $query
+        ]
+    );
 }
-// end file
-?>

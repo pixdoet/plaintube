@@ -1,0 +1,79 @@
+{% extends "base.html.twig" %}
+{% block mainContent %}
+<div class="searchInfoHolder">
+    <div style="padding:4px 6px;background:#EEE;font-weight:bold;border-top:1px solid #999">
+        <div style="font-weight:normal">
+            Result type:
+            <b>    Videos
+            </b><br>
+            Uploaded:
+            <b>Anytime
+            </b>
+        </div>
+        <!-- <a href="#change_search">Search options</a> -->
+    </div>
+    <div class="searchResultsHolder">
+        <div>
+        {% for results in searchResults %}
+<table width="100%">
+
+
+<tbody><tr valign="top">
+<td style="font-size:0px" width="125">
+<img src="http://i.ytimg.com/vi/{{results.videoId}}/default.jpg?w=120&amp;h=90&amp;sigh=IC_2w_bUdNrYgoY5j20d08oGiTM" alt="video" style="border:0;" width="120" height="90">
+</td>
+<td class="videoListItem" style="width:100%;font-size:13px" onclick="document.location='/watch.php?client=mv-google&amp;hl=en&amp;gl=US&amp;v={{results.videoId}}';">
+<div style="padding-bottom:1px;font-size:90%;text-align:left" dir="ltr">
+<a accesskey="1" href="/watch.php?v={{results.videoId}}">  {{results.videoTitle}}
+</a>
+</div>
+<div style="color:#333;font-size:80%">{{results.videoRuntime}}&nbsp;&nbsp;
+<span style="color: #006500">4784</span> likes, <span style="color: #CB0000">33</span> dislikes
+</div>
+<div style="color:#333;font-size:80%">
+by {{results.videoAuthor}}
+</div>
+<div style="color:#333;font-size:80%">{{results.videoViewCount}}</div>
+</td>
+</tr>
+</tbody></table>
+<hr style="width:100%;height:1px;margin:2px 0;padding:0;color:#999;background:#999;border:none;" size="1" noshade="noshade" color="#999">
+{% endfor %}
+</div>
+    </div>
+    <div class="searchFootrest">
+        <div style="padding:4px 6px;background:#EEE;font-weight:bold;border-top:1px solid #999">
+<div align="center">
+<a name="change_search" id="change_search"></a>
+<form action="/results" method="GET">
+<input type="hidden" name="safesearch" value="0">
+<input name="q" type="textarea" value="{{query}}"><br>
+<select name="search_type">
+<option value="">    Videos
+</option>
+<option value="search_users">    Channels
+</option>
+<option value="search_playlists">    Playlists
+</option>
+</select>
+<select name="uploaded">
+<option value="" selected="selected">Anytime
+</option>
+<option value="d">Today
+</option>
+<option value="w">This Week
+</option>
+<option value="m">This Month
+</option>
+</select>
+<br>
+<input type="submit" value="Search">
+</form>
+</div>
+</div>
+    </div>
+</div>
+<script type="text/javascript">
+document.querySelector("#searchQuery").setAttribute("value", {{query}})
+</script>
+{% endblock %}
