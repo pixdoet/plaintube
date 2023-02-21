@@ -1,25 +1,84 @@
 {% extends "base.html.twig" %}
-{% block content %}
-	<div class="titleBar">
-		<h1>{{ videoTitle }}</h1>
+{% block mainContent %}
+<!-- http://web.archive.org/web/20130422211935/http://m.youtube.com/watch?v=dB3VMs2OESM&amp;api_format=3&amp;vndel=watch -->
+<!-- http://web.archive.org/web/20130522190432/http://m.youtube.com/view_comment?hl=en&gl=BR&client=mv-google&v=j5b4CCe9pS8 -->
+<div class="videoRenderer">
+	<div style="margin-right:3px;margin-left:3px">
+<div style="border-top:none;padding-top:8px;text-align:left;margin:3px 0">
+<div style="font-weight:bold;padding-bottom:1px">
+{{videoTitle}}
+</div>
+<table>
+<tbody><tr valign="top">
+<td width="" align="left">
+
+<a href="{{videoSrc}}" type="video/3gp">  <img src="{{videoThumbnail}}" alt="video" style="border:0;" width="160" height="120"></a>
+</td>
+<td>
+<div style="font-size:13px">
+<div style="padding-left:2px;font-size:80%;text-align:left">
+<div>
+{{videoRuntime}} | {{ videoLikeText | striptags('<span>') | raw}}
+</div>
+<div>
+{{videoViews}} views
+</div>
+<a href="/index.php">{{ videoChannelName }}</a>
+<div>{{videoUploadDate}}</div>
+</div>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+<div>
+<a href="{{videoSrc}}" type="video/3gp" alt="video">Watch Video</a>
+</div>
+<a href="#watch_actions">
+Share Video
+</a>
+<br>
+<!-- start video description -->
+<div style="margin-right:3px;margin-left:3px">
+<div dir="ltr" align="left" style="white-space: pre-line;">
+{{videoDescription | striptags("<i><span>") | raw}}
+</div>
+</div>
+</div>
+
+<!-- Start related videos section -->
+
+<div class="relatedRenderer">
+	<div style="font-size:110%;font-weight:bold;margin-left:3px;padding-bottom:3px;margin-right:3px">
+		Related Videos ({{videoRelatedCount}})
 	</div>
-	<div class="videoHolder">
-		{{ videoSrcHtml | raw }}
+		<div>
+	<div>
+		{% for related in videoRelated %}
+			<table width="100%">
+				<tbody>
+					<tr valign="top">
+					<td style="font-size:0px" width="125">
+						<img src="https://i.ytimg.com/vi/{{ related.compactVideoRenderer.videoId }}/hqdefault.jpg" alt="video" class="thumbnails" style="border:0;background-position:0px 0px;" width="120" height="90">
+					</td>
+					<td class="videoListItem" style="width:100%;font-size:13px" onclick="document.location='/watch.php?v={{ related.compactVideoRenderer.videoId }}';">
+						<div style="font-size:90%;text-align:left;padding-bottom:1px" dir="rtl">
+							<a accesskey="1" href="/watch.php?v={{related.compactVideoRenderer.videoId}}">{{related.compactVideoRenderer.title.simpleText}}</a>
+						</div>
+						<div style="font-size:80%;color:#333">{{ related.compactVideoRenderer.lengthText.simpleText }}&nbsp;&nbsp;
+							<span style="color: #006500">285</span> likes, <span style="color: #CB0000">0</span> dislikes
+						</div>
+						<div style="font-size:80%;color:#333">
+							by {{ related.compactVideoRenderer.shortBylineText.runs[0].text }}
+						</div>
+						<div style="font-size:80%;color:#333">{{ related.compactVideoRenderer.viewCountText.simpleText }}</div>
+					</td>
+					</tr>
+				</tbody>
+			</table>
+			<hr style="width:100%;height:1px;margin:2px 0;padding:0;color:#999;background:#999;border:none;" size="1" noshade="noshade" color="#999">
+			{% endfor %}
 	</div>
-	<div class="videoDetails">
-		<div class="topDetails">
-			<p class="viewCount">{{ videoViewCount }}
-				views</p>
-			<p class="uploadDate">
-				{{ videoUploadDate }}
-			</p>
-		</div>
-		<div class="bottomDetails">
-			<p class="description">{{ videoDescription }}</p>
-			<p class="uploadAuthor">
-				Uploaded by:
-				<a href="profile.php?id={{ authorChannelId }}">{{ videoAuthor }}</a>
-			</p>
-		</div>
-	</div>
+
+</div>
 {% endblock %}

@@ -1,5 +1,8 @@
+
 <?php
 // watch.php for watching videos
+
+// init twig services
 require __DIR__ . '/vendor/autoload.php';
 
 use Twig\Environment;
@@ -8,10 +11,16 @@ use Twig\Loader\FilesystemLoader;
 $loader = new FilesystemLoader(__DIR__ . '/templates');
 $twig = new Environment($loader);
 
-include("includes/youtubei/createRequest.php");
+include("includes/youtubei/player.php");
+include("includes/youtubei/comments.php");
 
 if (!isset($_GET['v'])) {
-    include('includes/html/novideo.php');
+    echo $twig->render(
+        "novideo.html.twig",
+        [
+            "id" => "#",
+        ]
+    );
 } else {
     $id = $_GET['v'];
 
@@ -21,7 +30,12 @@ if (!isset($_GET['v'])) {
 
     // check if video exists
     if (!isset($mainResponseObject->videoDetails->title)) {
-        include('includes/novideo.php');
+        echo $twig->render(
+            "novideo.html.twig",
+            [
+                "id" => $id,
+            ]
+        );
     } else {
         $videoDetails = array(
             "videoTitle" => $mainResponseObject->videoDetails->title,
@@ -30,9 +44,10 @@ if (!isset($_GET['v'])) {
             "videoViews" => $mainResponseObject->videoDetails->viewCount,
             "videoAuthor" => $mainResponseObject->microformat->playerMicroformatRenderer->ownerChannelName,
             "videoUploadDate" => $mainResponseObject->microformat->playerMicroformatRenderer->uploadDate,
-            "videoRuntime" => $mainResponseObject->microformat->playerMicroformatRenderer->lengthSeconds,
+            "videoRuntimeOld" => $mainResponseObject->microformat->playerMicroformatRenderer->lengthSeconds,
             "videoThumbnail" => $mainResponseObject->microformat->playerMicroformatRenderer->thumbnail->thumbnails[0]->url,
             "authorChannelId" => $mainResponseObject->microformat->playerMicroformatRenderer->externalChannelId,
+            "videoRuntime" => gmdate("i:s", $mainResponseObject->microformat->playerMicroformatRenderer->lengthSeconds),
         );
 
         // replace description text if description exists
@@ -40,39 +55,72 @@ if (!isset($_GET['v'])) {
             $videoDetails['videoDescription'] = $mainResponseObject->microformat->playerMicroformatRenderer->description->simpleText;
         }
 
-        // get video tags(annoying)
+        // get video tags
         if (isset($mainResponseObject->videoDetails->keywords)) {
             $tagarr = $mainResponseObject->videoDetails->keywords;
             $tagcount = sizeof($tagarr);
             if ($tagcount >= 1) {
                 $tags = $tagarr;
             } else {
-                $tags = array("None");
+                $tags = array(0 => "None");
             }
         } else {
             $tagcount = 0;
+            $tags = array(0 => "None");
         }
 
         // video source file
-        if (isset($mainResponseObject->streamingData->formats[0]->url)) {
-            // generate video tag HTML
-            $videoHtml = sprintf('<video controls src="%s" class="video-player googlevideo-player" style="width: 427px; margin:center;">', $mainResponseObject->streamingData->formats[0]->url);
+        if (requestVideoSrc($id)) {
+            $videoLink = requestVideoSrc($id);
         } else {
-            // generate error text HTML
-            $videoHtml = sprintf('Video unavailable for playback. <a href="https://youtube.com/watch?v=%s">Watch on YouTube</a>', $id);
+            $videoLink = "/novideo.php";
         }
-        echo $twig->render(
-            "watch.html.twig",
-            [
-                "videoTitle" => $videoDetails['videoTitle'],
-                "videoDescription" => $videoDetails['videoDescription'],
-                "videoViewCount" => $videoDetails['videoViews'],
-                "videoAuthor" => $videoDetails['videoAuthor'],
-                "videoUploadDate" => $videoDetails['videoUploadDate'],
-                "authorChannelId" => $videoDetails['authorChannelId'],
-                "videoUploadDate" => $videoDetails['videoUploadDate'],
-                "videoSrcHtml" => $videoHtml,
-            ]
-        );
+
+        $initialResponseContext = json_decode(fetchInitialNext($id));
+
+        // get like count
+        if ($mainResponseObject->videoDetails->allowRatings) {
+            if (isset($initialResponseContext->contents->twoColumnWatchNextResults->results->results->contents[0]->videoPrimaryInfoRenderer->videoActions->menuRenderer->topLevelButtons[0]->segmentedLikeDislikeButtonRenderer->likeButton->toggleButtonRenderer->defaultText->simpleText)) {
+                $likeCount = $initialResponseContext->contents->twoColumnWatchNextResults->results->results->contents[0]->videoPrimaryInfoRenderer->videoActions->menuRenderer->topLevelButtons[0]->segmentedLikeDislikeButtonRenderer->likeButton->toggleButtonRenderer->defaultText->simpleText;
+                $likeText = "<span style=\"color: #006500\">" . $likeCount . "</span> likes, <span style=\"color: #CB0000\">0</span> dislikes";
+            }
+        } else {
+            $likeText = "Ratings disabled";
+        }
+
+        // get related videos...
+        if (isset($initialResponseContext->contents->twoColumnWatchNextResults->secondaryResults->secondaryResults->results)) {
+            $hasRelated = true;
+            $relatedArray = $initialResponseContext
+                ->contents
+                ->twoColumnWatchNextResults
+                ->secondaryResults
+                ->secondaryResults
+                ->results;
+        } else {
+            $hasRelated = false;
+        }
+
+        // output video info to twig
+        $dataArray = [
+            "videoId" => $id,
+            "videoSrc" => $videoLink,
+            "videoTags" => $tags,
+            "videoDescription" => $videoDetails['videoDescription'],
+            "videoTitle" => $videoDetails['videoTitle'],
+            "videoViews" => $videoDetails['videoViews'],
+            "videoAuthor" => $videoDetails['videoAuthor'],
+            "videoUploadDate" => $videoDetails['videoUploadDate'],
+            "videoRuntime" => $videoDetails['videoRuntime'],
+            "videoThumbnail" => $videoDetails['videoThumbnail'],
+            "authorChannelId" => $videoDetails['authorChannelId'],
+            "hasRelated" => $hasRelated,
+            "videoLikeText" => $likeText
+        ];
+        if ($hasRelated) {
+            $dataArray['videoRelated'] = $relatedArray;
+            $dataArray['videoRelatedCount'] = sizeof($relatedArray) - 1;
+        }
+        echo $twig->render("watch.html.twig", $dataArray);
     }
 }
