@@ -73,32 +73,10 @@ if (!isset($_GET['v'])) {
         if (requestVideoSrc($id)) {
             $videoLink = requestVideoSrc($id);
         } else {
-            $videoHtml = sprintf('<span class="noVideoError">Video unavailable for playback. <a href="https://youtube.com/watch?v=%s">Watch on YouTube</a></span>', $id);
+            $videoLink = "/novideo.php";
         }
 
-        // fetch comments into an array...
         $initialResponseContext = json_decode(fetchInitialNext($id));
-        if (isset($initialResponseContext->contents->twoColumnWatchNextResults->results->results->contents[3])) {
-            $hasComments = true;
-            $continuation = $initialResponseContext
-                ->contents
-                ->twoColumnWatchNextResults
-                ->results
-                ->results
-                ->contents[3]
-                ->itemSectionRenderer
-                ->contents[0]
-                ->continuationItemRenderer
-                ->continuationEndpoint
-                ->continuationCommand
-                ->token;
-            // fetch the comments
-            $mainResponseContext = json_decode(fetchComment($id, $continuation));
-            $commentsArray = $mainResponseContext->onResponseReceivedEndpoints[1]->reloadContinuationItemsCommand->continuationItems;
-            // start writing to twiG
-        } else {
-            $hasComments = false;
-        }
 
         // get like count
         if ($mainResponseObject->videoDetails->allowRatings) {
@@ -136,13 +114,9 @@ if (!isset($_GET['v'])) {
             "videoRuntime" => $videoDetails['videoRuntime'],
             "videoThumbnail" => $videoDetails['videoThumbnail'],
             "authorChannelId" => $videoDetails['authorChannelId'],
-            "hasComments" => $hasComments,
             "hasRelated" => $hasRelated,
             "videoLikeText" => $likeText
         ];
-        if ($hasComments) {
-            $dataArray['videoComments'] = $commentsArray;
-        }
         if ($hasRelated) {
             $dataArray['videoRelated'] = $relatedArray;
             $dataArray['videoRelatedCount'] = sizeof($relatedArray) - 1;

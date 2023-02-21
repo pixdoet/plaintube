@@ -41,7 +41,7 @@ Share Video
 <!-- start video description -->
 <div style="margin-right:3px;margin-left:3px">
 <div dir="ltr" align="left" style="white-space: pre-line;">
-{{videoDescription}}
+{{videoDescription | striptags("<i><span>") | raw}}
 </div>
 </div>
 </div>
@@ -50,7 +50,7 @@ Share Video
 
 <div class="relatedRenderer">
 	<div style="font-size:110%;font-weight:bold;margin-left:3px;padding-bottom:3px;margin-right:3px">
-		Related Videos
+		Related Videos ({{videoRelatedCount}})
 	</div>
 		<div>
 	<div>
